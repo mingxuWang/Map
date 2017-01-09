@@ -13,8 +13,8 @@
     <script src="http://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
     <script src="./map.js" charset="utf-8"></script>
     <script type="text/javascript">
-      var map,drawTool,infoWindow,district,mouseTool,locate,polyEditor;
-      new MapTool(["DrawTool","Map","InfoWindow","District","MouseTool","Locate","PolyEditor"],{
+      var map,drawTool,infoWindow,district,mouseTool,locate,polyEditor,events;
+      new MapTool(["DrawTool","Map","InfoWindow","District","MouseTool","Locate","PolyEditor","Events"],{
         Map:{
           container:"mapContainer",
           // zoom:4
@@ -27,6 +27,7 @@
         mouseTool = toolList[4];
         locate = toolList[5];
         polyEditor = toolList[6];
+        events = toolList[7];
         action();
       }).fail(function(){
         var error = arguments[0][0];
@@ -44,11 +45,12 @@
       ]
 
       function action(){
-        drawTool.marker([{
+        var marker = drawTool.marker({
           position:[116.409405,39.899195]
-        },{
-          position:[116.695049,39.837007]
-        }]);
+        });
+        marker.on("click",function(e){
+          console.log(e.target.getPosition());
+        })
         var poly = drawTool.polygon({
           path:lineArr
         });
@@ -84,8 +86,15 @@
               map.setFitView();//地图自适应
           }
         });
-
+        // events.on(mouseTool,"draw",function(e){
+        //   console.log(e);
+        // })
         mouseTool.marker();
+        // mouseTool.on("draw",function(e){
+        //   console.log(e);
+        // });
+
+
       }
     </script>
   </body>

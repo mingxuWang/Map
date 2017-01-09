@@ -85,7 +85,9 @@ var PLUGIN_INIT_REALTION = {
   // 多边形/折线编辑功能
   PolyEditor: PolyEditorInit,
   // 定位功能
-  Locate: LocateInit
+  Locate: LocateInit,
+  // 事件绑定功能
+  Events: EventsInit
 };
 
 // 功能与插件加载对应关系
@@ -516,6 +518,34 @@ function LocateInit($Deferred) {
 
 }
 
+/**
+ * 事件模块初始化
+ */
+function EventsInit($Deferred) {
+  if (AMap) {
+    var Events = {
+      /**
+       * 给地图上的元素增加监听事件
+       * @param [AMap Object] target 需要被监听事件的地图元素
+       * @param [String] eventName 需要监听的事件
+       * @param [Function] callback 需要执行的函数
+       * @param [Object] context 事件上下文
+       */
+      on: function(target, eventName, callback, context) {
+        AMap.event.addListener(target, eventName, function(e) {
+          callback(e);
+        }, context);
+      }
+    };
+    $Deferred.resolve(Events);
+  } else {
+    console.error(ERROR_MSG.apiFailed);
+    $Deferred.reject({
+      msg: ERROR_MSG.apiFailed
+    });
+  }
+
+}
 
 // 辅助方法
 
