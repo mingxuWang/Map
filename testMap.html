@@ -14,14 +14,14 @@
     <script src="./map.js" charset="utf-8"></script>
     <script type="text/javascript">
       var map,drawTool,infoWindow,district,mouseTool,locate,polyEditor;
-      new MapTool(["Map","DrawTool","InfoWindow","District","MouseTool","Locate","PolyEditor"],{
+      new MapTool(["DrawTool","Map","InfoWindow","District","MouseTool","Locate","PolyEditor"],{
         Map:{
           container:"mapContainer",
           // zoom:4
         }
       }).then(function(toolList){
-        map = toolList[0];
-        drawTool = toolList[1];
+        map = toolList[1];
+        drawTool = toolList[0];
         infoWindow = toolList[2];
         district = toolList[3];
         mouseTool = toolList[4];
