@@ -55,16 +55,26 @@ var TOOL_OPTIONS = {
   },
   // 定位默认参数
   Locate: {
-    enableHighAccuracy: true, //是否使用高精度定位，默认:true
-    timeout: 10000, //超过10秒后停止定位，默认：无穷大
-    maximumAge: 0, //定位结果缓存0毫秒，默认：0
-    convert: true, //自动偏移坐标，偏移后的坐标为高德坐标，默认：true
-    showButton: true, //显示定位按钮，默认：true
-    buttonPosition: 'LB', //定位按钮停靠位置，默认：'LB'，左下角
-    showMarker: true, //定位成功后在定位到的位置显示点标记，默认：true
-    showCircle: true, //定位成功后用圆圈表示定位精度范围，默认：true
-    panToLocation: true, //定位成功后将定位到的位置作为地图中心点，默认：true
-    zoomToAccuracy: true //定位成功后调整地图视野范围使定位位置及精度范围视野内可见，默认：false
+    // 是否使用高精度定位，默认:true
+    enableHighAccuracy: true,
+    // 超过10秒后停止定位，默认：无穷大
+    timeout: 10000,
+    //定位结果缓存0毫秒，默认：0
+    maximumAge: 0,
+    //自动偏移坐标，偏移后的坐标为高德坐标，默认：true
+    convert: true,
+    //显示定位按钮，默认：true
+    showButton: true,
+    //定位按钮停靠位置，默认：'LB'，左下角
+    buttonPosition: 'LB',
+    //定位成功后在定位到的位置显示点标记，默认：true
+    showMarker: true,
+    //定位成功后用圆圈表示定位精度范围，默认：true
+    showCircle: true,
+    //定位成功后将定位到的位置作为地图中心点，默认：true
+    panToLocation: true,
+    //定位成功后调整地图视野范围使定位位置及精度范围视野内可见，默认：false
+    zoomToAccuracy: true
   },
   // 插件列表，默认为空，根据用户选择功能增加相应插件加载
   plugin: [],
@@ -268,7 +278,18 @@ function DrawToolInit($Deferred) {
         }
         /**
          * 点绘制方法
-         * @param {Object} markerOpts - 点绘制参数
+         * @param  {Object} markerOpts - 点绘制参数
+         * @param   {Array} markerOpts.position - 必填参数，marker绘制位置
+         * @param   {Array} markerOpts.offset - 点标记显示位置偏移量，默认值为[-10,-34]，选填
+         * @param  {String} markerOpts.icon - 需在点标记中显示的图标。可以是一个本地图标地址，有合法的content内容时，此属性无效，默认为http://webapi.amap.com/theme/v1.3/markers/n/mark_b.png 蓝色标志
+         * @param  {String} markerOpts.content - 点标记显示内容，可以是HTML要素字符串。content有效时，icon属性将被覆盖
+         * @param {Boolean} markerOpts.topWhenClick - 鼠标点击时marker是否置顶，默认false ，不置顶
+         * @param {Boolean} markerOpts.draggable - 设置点标记是否可拖拽移动，默认为false
+         * @param {Boolean} markerOpts.raiseOnDrag - 设置拖拽点标记时是否开启点标记离开地图的效果，默认为false
+         * @param  {Number} markerOpts.zIndex - 点标记的叠加顺序。地图上存在多个点标记叠加时，通过该属性使级别较高的点标记在上层显示，默认zIndex：100
+         * @param  {String} markerOpts.title - 鼠标滑过点标记时的文字提示，不设置则鼠标滑过点标无文字提示
+         * @param {Boolean} markerOpts.clickable - 点标记是否可点击，默认true
+         * @param {Anytype} markerOpts.extData - 用户自定义属性，支持JavaScript API任意数据类型，如Marker的id等
          */
         function drawMarker(markerOpts) {
           // 判断坐标是否有问题
@@ -303,8 +324,15 @@ function DrawToolInit($Deferred) {
           return drawPolyline(opts);
         }
         /**
-         * 点绘制方法
-         * @param {Object} markerOpts - 点绘制参数
+         * 折线绘制方法
+         * @param  {Object} polylineOpts - 折线绘制参数
+         * @param   {Array} polylineOpts.path - 必填参数，折线的节点坐标数组
+         * @param  {String} polylineOpts.strokeColor - 线条颜色，使用16进制颜色代码赋值。默认值为#3366FF[亮蓝色]
+         * @param  {Number} polylineOpts.strokeOpacity - 线条透明度，取值范围[0,1]，0表示完全透明，1表示不透明。默认为0.9
+         * @param  {Number} polylineOpts.strokeWeight - 线条宽度，单位：像素，默认3
+         * @param  {String} polylineOpts.strokeStyle - 线样式，实线:solid，虚线:dashed,默认solid
+         * @param  {Number} polylineOpts.zIndex - 折线的叠加顺序。地图上存在多个点标记叠加时，通过该属性使级别较高的点标记在上层显示，默认50
+         * @param {Anytype} polylineOpts.extData - 用户自定义属性，支持JavaScript API任意数据类型，如Marker的id等
          */
         function drawPolyline(polylineOpts) {
           // 判断坐标是否有问题
@@ -338,8 +366,17 @@ function DrawToolInit($Deferred) {
           return drawPolygon(opts);
         }
         /**
-         * 点绘制方法
-         * @param {Object} markerOpts - 点绘制参数
+         * 多边形绘制方法
+         * @param  {Object} polygonOpts - 多边形绘制参数
+         * @param   {Array} polygonOpts.path - 必填参数，多边形的节点坐标数组
+         * @param  {String} polygonOpts.strokeColor - 外边界颜色，使用16进制颜色代码赋值。默认值为#3366FF[亮蓝色]
+         * @param  {Number} polygonOpts.strokeOpacity - 外边界透明度，取值范围[0,1]，0表示完全透明，1表示不透明。默认为0.9
+         * @param  {Number} polygonOpts.strokeWeight - 外边界宽度，单位：像素，默认为3
+         * @param  {String} polygonOpts.strokeStyle - 外边界样式，实线:solid，虚线:dashed，默认solid
+         * @param  {String} polygonOpts.fillColor - 多边形填充颜色，使用16进制颜色代码赋值。默认值为#FFAA00[亮黄色]
+         * @param  {Number} polygonOpts.fillOpacity - 多边形填充透明度，取值范围[0,1]，0表示完全透明，1表示不透明。默认为0.9
+         * @param  {Number} polygonOpts.zIndex - 多边形的叠加顺序。地图上存在多个点标记叠加时，通过该属性使级别较高的点标记在上层显示，默认50
+         * @param {Anytype} polygonOpts.extData - 用户自定义属性，支持JavaScript API任意数据类型，如Marker的id等
          */
         function drawPolygon(polygonOpts) {
           // 判断坐标是否有问题
@@ -373,8 +410,15 @@ function DrawToolInit($Deferred) {
           return drawMassMarks(opts);
         }
         /**
-         * 点绘制方法
-         * @param {Object} markerOpts - 点绘制参数
+         * 麻点绘制方法
+         * @param  {Object} massOpts - 麻点绘制参数
+         * @param  {String} massOpts.url - 必填参数，图标的地址,默认为http://webapi.amap.com/theme/v1.3/markers/n/mark_r.png 红色标志
+         * @param   {Array} massOpts.size - 必填参数，图标的尺寸，默认[10, 14]
+         * @param   {Array} massOpts.anchor - 必填参数，图标显示位置偏移量，以图标的左上角为基准点（0,0）点，默认[3, 7]
+         * @param  {Number} massOpts.zIndex - 图层叠加的顺序值，0表示最底层。默认5
+         * @param  {Number} massOpts.opacity - 图层的透明度，取值范围[0,1]，1代表完全不透明，0代表完全透明
+         * @param   {Array} massOpts.zooms - 支持的缩放级别范围，默认范围[3-18]，在PC上，取值范围为[3-18]；在移动设备上，取值范围为[3-19]
+         * @param {Boolean} massOpts.alwaysRender - 表示是否在拖拽缩放过程中实时重绘，默认true，建议超过10000的时候设置false
          */
         function drawMassMarks(massOpts) {
           // 判断坐标是否有问题
@@ -400,7 +444,13 @@ function DrawToolInit($Deferred) {
       contextMenu: function(menuOpts) {
 
         return drawContextMenu(menuOpts);
-
+        /**
+         * 右键菜单绘制方法
+         * @param  {Object} menuOpts - 右键菜单绘制参数
+         * @param   {Array} menuOpts.position - 右键菜单显示的位置，初始化一般不填，会在开启时传入参数
+         * @param  {String} menuOpts.content - 右键菜单内容，初始化一般不填，调用方法增加
+         * @param  {Number} menuOpts.width - 右键菜单宽度，初始化一般不填，会自动设置
+         */
         function drawContextMenu(menuOpts) {
           var options = {};
           if (menuOpts && menuOpts.content !== undefined) {
