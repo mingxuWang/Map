@@ -48,6 +48,9 @@
         var marker = drawTool.marker({
           position:[116.409405,39.899195]
         });
+        var circle = drawTool.circle({
+          center:[116.409405,39.899195]
+        });
         marker.on("click",function(e){
           console.log(e.target.getPosition());
         })

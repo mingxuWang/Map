@@ -21,6 +21,25 @@ var TOOL_OPTIONS = {
       // marker偏移量
       offset: [-10, -34],
     },
+    // 圆参数
+    circle: {
+      // 半径长度
+      radius: 100,
+      // 默认图层位置
+      zIndex: 10,
+      // 边界颜色
+      strokeColor: "#3366FF",
+      // 边界透明度
+      strokeOpacity: 0.9,
+      // 边界宽度
+      strokeWeight: 1,
+      // 边界样式
+      strokeStyle: "solid",
+      // 填充颜色
+      fillColor: "#FFAA00",
+      // 填充透明度
+      fillOpacity: 0.9
+    },
     // 折线参数
     polyline: {
       // 折线颜色
@@ -117,7 +136,7 @@ var ERROR_MSG = {
   nameError: "插件名称错误，加载失败",
   mapContainerError: "未传入地图容器id，加载失败！",
   inputError: "未输入所需功能组件，加载失败",
-  positionError: "坐标点绘制时出现问题！",
+  positionError: "绘制时输入的坐标点出现问题！",
   pluginError: "用户功能组件加载失败！",
   apiFailed: "高德API加载失败",
   mapDependenceError: "依赖Map功能，功能列表未传入Map功能，请重新组织功能参数！"
@@ -302,7 +321,52 @@ function DrawToolInit($Deferred) {
             return marker;
           } else {
             // 输出坐标错误提示
-            console.error(positionError);
+            console.error("Marker" + positionError);
+          }
+        }
+      },
+      /**
+       * circle绘制圆
+       * @param {Object/Array} opts - 有两种可能，当是Object时为绘制一个圆 当为Array时需要一组圆集中绘制
+       * @return {Object/Array} 返回marker点对象或点对象数组
+       */
+      circle: function(opts) {
+        // 判断如果是数组时，提供集中绘制的方法
+        if ($.isArray(opts)) {
+          var circleList = [];
+          $.each(opts, function(index, item) {
+            circleList.push(drawCircle(item));
+          });
+          return circleList;
+        } else {
+          // 否则直接绘制一个点就可以了
+          return drawCircle(opts);
+        }
+        /**
+         * 圆绘制方法
+         * @param  {Object} circleOpts - 圆绘制参数
+         * @param   {Array} circleOpts.center - 必填参数，circle绘制位置
+         * @param   {Array} circleOpts.radius - 圆半径，单位:米，默认100
+         * @param  {Number} circleOpts.zIndex - 圆的叠加顺序。地图上存在多个点标记叠加时，通过该属性使级别较高的点标记在上层显示，默认10
+         * @param  {String} circleOpts.strokeColor - 外边界颜色，使用16进制颜色代码赋值。默认值为#3366FF[亮蓝色]
+         * @param  {Number} circleOpts.strokeOpacity - 外边界透明度，取值范围[0,1]，0表示完全透明，1表示不透明。默认为0.9
+         * @param  {Number} circleOpts.strokeWeight - 外边界宽度，单位：像素，默认为3
+         * @param  {String} circleOpts.strokeStyle - 外边界样式，实线:solid，虚线:dashed，默认solid
+         * @param  {String} circleOpts.fillColor - 圆填充颜色，使用16进制颜色代码赋值。默认值为#FFAA00[亮黄色]
+         * @param  {Number} circleOpts.fillOpacity - 圆填充透明度，取值范围[0,1]，0表示完全透明，1表示不透明。默认为0.9
+         * @param {Anytype} circleOpts.extData - 用户自定义属性，支持JavaScript API任意数据类型，如Circle的id等
+         */
+        function drawCircle(circleOpts) {
+          // 判断坐标是否有问题
+          if ($.isArray(circleOpts.center)) {
+            // 合并用户输入参数与默认参数
+            var options = $.extend(true, {}, TOOL_OPTIONS.DrawTool.circle, circleOpts);
+            options.map = plugin.map;
+            var circle = new AMap.Circle(options);
+            return circle;
+          } else {
+            // 输出坐标错误提示
+            console.error("Circle" + positionError);
           }
         }
       },
@@ -344,7 +408,7 @@ function DrawToolInit($Deferred) {
             return polyline;
           } else {
             // 输出坐标错误提示
-            console.error(positionError);
+            console.error("Polyline" + positionError);
           }
         }
       },
@@ -388,7 +452,7 @@ function DrawToolInit($Deferred) {
             return polyline;
           } else {
             // 输出坐标错误提示
-            console.error(positionError);
+            console.error("Polygon" + positionError);
           }
         }
       },
@@ -432,7 +496,7 @@ function DrawToolInit($Deferred) {
             return massMarks;
           } else {
             // 输出坐标错误提示
-            console.error(positionError);
+            console.error("Massmarks" + positionError);
           }
         }
       },
