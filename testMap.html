@@ -89,13 +89,22 @@
               map.setFitView();//地图自适应
           }
         });
-        // events.on(mouseTool,"draw",function(e){
-        //   console.log(e);
+        events.on(poly,"click",function(e){
+          console.log(e,"click");
+          alert("不能画到已绘制区域中！");
+          mouseTool.close(true);
+        })
+        mouseTool.polygon();
+        // $(".amap-layers").on("mousedown",function(e){
+        //     console.log(e);
+        //     return false;
         // })
-        mouseTool.marker();
-        // mouseTool.on("draw",function(e){
-        //   console.log(e);
-        // });
+        map.on("click",function(e){
+            console.log(e);
+        })
+        mouseTool.on("draw",function(e){
+          console.log(e);
+        });
 
 
       }
