@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>测试地图组件</title>
+    <style media="screen">
+        .btn{
+            position: fixed;
+            right: 30px;
+            cursor: pointer;
+            width: 100px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            background-color: white;
+            margin-bottom: 10px;
+            box-shadow: 1px 1px 5px;
+        }
+        .draw{
+            top: 200px;
+        }
+        .confirm{
+            top: 200px;
+            display: none;
+        }
+        .submit{
+            top: 260px;
+        }
+    </style>
+  </head>
+  <body>
+    <div class="" id="mapContainer" style="width:100%;height:600px"></div>
+    <div class="btns">
+        <div class="btn draw">绘制</div>
+        <div class="btn confirm">确认</div>
+        <div class="btn submit">提交</div>
+    </div>
+
+
+
+    <script src="http://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+    <script src="./map.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      var map,drawTool,infoWindow,district,mouseTool,locate,polyEditor,events;
+      var draw = false;
+      var edit = false;
+      new MapTool(["DrawTool","Map","InfoWindow","District","MouseTool","Locate","PolyEditor","Events"],{
+        Map:{
+          container:"mapContainer",
+          // zoom:4
+        }
+      }).then(function(toolList){
+        map = toolList[1];
+        drawTool = toolList[0];
+        infoWindow = toolList[2];
+        district = toolList[3];
+        mouseTool = toolList[4];
+        locate = toolList[5];
+        polyEditor = toolList[6];
+        events = toolList[7];
+        action();
+      }).fail(function(){
+        var error = arguments[0][0];
+        console.log(error.msg);
+      })
+      var lineArr = [
+          [116.368904, 39.913423],
+          [116.382122, 39.901176],
+          [116.387271, 39.912501],
+          [116.398258, 39.904600]
+      ];
+      var lines = [
+        [116.409405,39.899195],
+        [116.695049,39.837007]
+      ]
+
+      function action(){
+        bindEvents();
+        var editor;
+        var poly = drawTool.polygon({
+          path:lineArr
+        });
+        // var editor = polyEditor.get(poly);
+        // editor.open();
+        poly.on('rightclick', function(e) {
+            console.log(e);
+            var menu = drawTool.contextMenu();
+            if(!edit){
+                menu.addItem("编辑",function(){
+                    edit = true;
+                    editor = polyEditor.get(e.target);
+                    editor.open();
+                },0);
+            }else{
+                menu.addItem("保存编辑",function(){
+                    edit = false;
+                    editor.close();
+                },0);
+            }
+
+            menu.addItem("删除",function(){
+                map.remove(e.target);
+            //   e.target.hide();
+            },0);
+            menu.open(map, e.lnglat);
+        });
+        events.on(poly,"click",function(e){
+          if(draw){
+              alert("不能画到已绘制区域中！请重新绘制");
+              mouseTool.close(true);
+              $(".confirm").hide();
+              $(".draw").show();
+          }
+
+        })
+        // $(".amap-layers").on("mousedown",function(e){
+        //     console.log(e);
+        //     return false;
+        // })
+        map.on("click",function(e){
+            console.log(e);
+        })
+        mouseTool.on("draw",function(e){
+          console.log(e.obj);
+          e.obj.on('rightclick', function(e) {
+              console.log(e);
+              var menu = drawTool.contextMenu();
+              if(!edit){
+                  menu.addItem("编辑",function(){
+                      edit = true;
+                      editor = polyEditor.get(e.target);
+                      editor.open();
+                  },0);
+              }else{
+                  menu.addItem("保存编辑",function(){
+                      edit = false;
+                      editor.close();
+                  },0);
+              }
+
+              menu.addItem("删除",function(){
+                  map.remove(e.target);
+                e.target.hide();
+              },0);
+              menu.open(map, e.lnglat);
+          });
+
+          e.obj.on("click",function(){
+              if(draw){
+                  alert("不能画到已绘制区域中！请重新绘制");
+                  mouseTool.close(true);
+                  $(".confirm").hide();
+                  $(".draw").show();
+              }
+          })
+        });
+
+        map.setFitView();
+
+
+
+        function bindEvents(){
+            $(".btns").on("click",".draw",function(e){
+                draw = true;
+                $(".confirm").show();
+                $(".draw").hide();
+                mouseTool.polygon();
+            }).on("click",".confirm",function(e){
+                draw = false;
+                $(".confirm").hide();
+                $(".draw").show();
+                mouseTool.close(false);
+            })
+        }
+
+      }
+    </script>
+  </body>
+</html>
